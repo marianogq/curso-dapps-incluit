@@ -49,7 +49,14 @@ contract Manager is Ownable {
     }
 
     // Events
+    event CreatedTicket(string, string, uint256, address);
+    event NewPrice(uint256);
     event ShowStatistics(uint256, uint256);
+    event DeletedTicket(uint256);
+    event ChangedTransferStatusTicket(TransferStatus);
+    event ChangedStatusTicket(TicketStatus);
+    event TransferredTicket(address,address);
+    event ManagedFee(uint256);
 
     event FundsReceived(uint256 amount);
 
@@ -93,6 +100,7 @@ contract Manager is Ownable {
         OwnersTickets.push(msg.sender);
         totalTickets += 1;
         balanceTickets = balanceTickets + _price;
+        emit CreatedTicket(_eventName, _eventDescription, _price, msg.sender);
     }
 
     /**@dev Funcion para cambiar el precio del ticket.
@@ -129,6 +137,7 @@ contract Manager is Ownable {
             listTickets[_addressOwner][_index].getPrice();
         balanceTickets = balanceTickets + priceDifference;
         listTickets[_addressOwner][_index].changePrice(_newPriceTicket);
+        emit NewPrice(_newPriceTicket);
     }
 
     /**@dev Función para mostrar las estadisticas.
@@ -158,6 +167,7 @@ contract Manager is Ownable {
         balanceTickets = balanceTickets - oldPrice;
         OwnersTickets[_index] = OwnersTickets[_index + 1];
         OwnersTickets.pop;
+        emit DeletedTicket(listTickets[_addressOwner][_index].getId());
     }
 
     /**@dev Función para cambiar el Estado de Transferencia (TRANSFERIBLE, NO_TRANSFERIBLE).
@@ -173,6 +183,7 @@ contract Manager is Ownable {
     {
         // Cambia el estado
         listTickets[_addressOwner][_index].changeTransferStatus();
+        emit ChangedTransferStatusTicket(listTickets[_addressOwner][_index].getTransferStatus());
     }
 
     /**@dev Función para cambiar el Estado del Ticket (VALID, USED, EXPIRED).
@@ -190,6 +201,7 @@ contract Manager is Ownable {
     ) public onlyOwnerTicket(_addressOwner, _index) {
         // Cambia el estado
         listTickets[_addressOwner][_index].changeStatus(_newTicketStatus);
+        emit ChangedStatusTicket(listTickets[_addressOwner][_index].getTicketStatus());
     }
 
     /**@dev Función para Transferir un Ticket.
@@ -247,6 +259,7 @@ contract Manager is Ownable {
         }("");
         require(sent, "Error en el envio de Ether");
         listTickets[_addressOwner][_index].changeOwner(_newOwner);
+        emit TransferredTicket(_addressOwner, _newOwner);
     }
 
     /**@dev Muestra información de los Tickets según dueño (owner).
@@ -273,6 +286,7 @@ contract Manager is Ownable {
     function feeManage(uint256 _feeTicket) public payable returns (uint256) {
         (bool success, ) = addressManager.call{value: _feeTicket}("");
         require(success == true, "Transferencia fallida!");
+        emit ManagedFee(_feeTicket);
         return _feeTicket;
     }
 
