@@ -55,7 +55,7 @@ contract Manager is Ownable {
     event DeletedTicket(uint256);
     event ChangedTransferStatusTicket(TransferStatus);
     event ChangedStatusTicket(TicketStatus);
-    event TransferredTicket(address,address);
+    event TransferredTicket(address, address);
     event ManagedFee(uint256);
 
     event FundsReceived(uint256 amount);
@@ -183,7 +183,9 @@ contract Manager is Ownable {
     {
         // Cambia el estado
         listTickets[_addressOwner][_index].changeTransferStatus();
-        emit ChangedTransferStatusTicket(listTickets[_addressOwner][_index].getTransferStatus());
+        emit ChangedTransferStatusTicket(
+            listTickets[_addressOwner][_index].getTransferStatus()
+        );
     }
 
     /**@dev Función para cambiar el Estado del Ticket (VALID, USED, EXPIRED).
@@ -201,7 +203,9 @@ contract Manager is Ownable {
     ) public onlyOwnerTicket(_addressOwner, _index) {
         // Cambia el estado
         listTickets[_addressOwner][_index].changeStatus(_newTicketStatus);
-        emit ChangedStatusTicket(listTickets[_addressOwner][_index].getTicketStatus());
+        emit ChangedStatusTicket(
+            listTickets[_addressOwner][_index].getTicketStatus()
+        );
     }
 
     /**@dev Función para Transferir un Ticket.
