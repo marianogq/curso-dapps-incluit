@@ -7,46 +7,60 @@ contract("Manager", function (accounts) {
   const [ownerTicket, noOwnerTicket] = accounts;
 
   beforeEach(async () => {
-    contract = await Manager.new(ownerTicket);
+    contract = await Manager.new();
   });
 
   context("function: createTicket", async function () {
     it("Should add the Ticket to list", async function () {
-      // Set up: Inicializar variables.
-      //In BeforeEach
+      await contract.createTicket(
+        "Coldplay",
+        "Concert Buenos Aires",
+        1,
+        150
+      );
+      let listOwners = await contract.getOwners();
+      assert.equal(listOwners.length, 1, "El tamaño de la lista deberia ser 1");
+    });
 
-      // Act: Ejecutar.
+    it("Should add the Ticket to list with address no owner", async function () {
       await contract.createTicket(
         "Coldplay",
         "Concert Buenos Aires",
         1,
         150,
-        ownerTicket
+        { from: noOwnerTicket }
       );
-
-      // Assert: Comprobar datos
-      let listTickets = await contract.listTickets[ownerTicket][0];
-      assert.equal(listTickets.length, 1, "El tamanio de la lista deberia ser 1");
+      let listOwners = await contract.getOwners();
+      assert.equal(listOwners.length, 1, "El tamaño de la lista deberia ser 1");
     });
 
-    // it("Should add the Ticket to list with address no owner", async function () {
-    //   // Set up:
+    // it("Should add the Ticket to list", async function () {
+    //   // Set up: Inicializar variables.
     //   //In BeforeEach
-
-    //   // Act:
     //   await contract.createTicket(
     //     "Coldplay",
     //     "Concert Buenos Aires",
     //     1,
-    //     150,
-    //     noOwnerTicket,
-    //     { from: noOwnerTicket }
+    //     150
     //   );
-
-    //   // Assert:
-    //   let Ticket = await contract.showTicketsByAddress(ownerTicket);
-    //   assert.equal(Ticket.length, 1, "El tamanio de la lista deberia ser 1");
+    //   // Act: Ejecutar.
+    //   let logs = await contract.createTicket(
+    //     "Coldplay",
+    //     "Concert Buenos Aires",
+    //     1,
+    //     150
+    //   );
+    //   //let listTickets = await contract.OwnersTickets[0];
+    //   console.log(logs);
+    //   console.log(logs.logs[0].args[4]);
+    //   console.log(contract.OwnersTickets[0]);
+    //   // Assert: Comprobar datos
+      
+      
+    //   console.log(ownerTicket);
+    //   assert.equal(listTickets, ownerTicket, "El tamanio de la lista deberia ser 1");
     // });
+
   });
 
 });

@@ -49,7 +49,7 @@ contract Manager is Ownable {
     }
 
     // Events
-    event CreatedTicket(string, string, uint256, address);
+    event CreatedTicket(string, string, EventType, uint256, address);
     event NewPrice(uint256);
     event ShowStatistics(uint256, uint256);
     event DeletedTicket(uint256);
@@ -100,7 +100,7 @@ contract Manager is Ownable {
         OwnersTickets.push(msg.sender);
         totalTickets += 1;
         balanceTickets = balanceTickets + _price;
-        emit CreatedTicket(_eventName, _eventDescription, _price, msg.sender);
+        emit CreatedTicket(_eventName, _eventDescription, _eventType, _price, msg.sender);
     }
 
     /**@dev Funcion para cambiar el precio del ticket.
@@ -304,5 +304,10 @@ contract Manager is Ownable {
         returns (uint256)
     {
         return ((listTickets[_addressOwner][_index].getPrice() * Fee) / 100);
+    }
+
+    // Función que devuelve la lista de Owners
+    function getOwners() public view returns (address[] memory) {
+        return OwnersTickets;
     }
 }
