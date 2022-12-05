@@ -306,7 +306,9 @@ contract Manager is Ownable {
         return ((listTickets[_addressOwner][_index].getPrice() * Fee) / 100);
     }
 
-    // Función que devuelve la lista de Owners
+    /**@dev Función que devuelve la lista de Owners.
+    * @return OwnersTickets Lista de Address de Dueños de Tickets.
+    */
     function getOwners() public view returns (address[] memory) {
         return OwnersTickets;
     }
