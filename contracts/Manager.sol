@@ -158,16 +158,19 @@ contract Manager is Ownable {
         public
         onlyOwner
     {
-        listTickets[_addressOwner][_index] = listTickets[_addressOwner][
-            _index + 1
-        ];
+        uint256 deletedTicket = listTickets[_addressOwner][_index].getId();
         uint256 oldPrice = listTickets[_addressOwner][_index].getPrice();
+        for (uint256 i = _index; i < listTickets[_addressOwner].length - 1; i++) {
+            listTickets[_addressOwner][i] = listTickets[_addressOwner][i + 1];
+        }
         listTickets[_addressOwner].pop();
         totalTickets -= 1;
         balanceTickets = balanceTickets - oldPrice;
-        OwnersTickets[_index] = OwnersTickets[_index + 1];
-        OwnersTickets.pop;
-        emit DeletedTicket(listTickets[_addressOwner][_index].getId());
+        for (uint256 i = _index; i < OwnersTickets.length - 1; i++) {
+            OwnersTickets[i] = OwnersTickets[i + 1];
+        }
+        OwnersTickets.pop();
+        emit DeletedTicket(deletedTicket);
     }
 
     /**@dev Función para cambiar el Estado de Transferencia (TRANSFERIBLE, NO_TRANSFERIBLE).

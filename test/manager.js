@@ -33,34 +33,104 @@ contract("Manager", function (accounts) {
       let listOwners = await contract.getOwners();
       assert.equal(listOwners.length, 1, "El tamaño de la lista deberia ser 1");
     });
-
-    // it("Should add the Ticket to list", async function () {
-    //   // Set up: Inicializar variables.
-    //   //In BeforeEach
-    //   await contract.createTicket(
-    //     "Coldplay",
-    //     "Concert Buenos Aires",
-    //     1,
-    //     150
-    //   );
-    //   // Act: Ejecutar.
-    //   let logs = await contract.createTicket(
-    //     "Coldplay",
-    //     "Concert Buenos Aires",
-    //     1,
-    //     150
-    //   );
-    //   //let listTickets = await contract.OwnersTickets[0];
-    //   console.log(logs);
-    //   console.log(logs.logs[0].args[4]);
-    //   console.log(contract.OwnersTickets[0]);
-    //   // Assert: Comprobar datos
-      
-      
-    //   console.log(ownerTicket);
-    //   assert.equal(listTickets, ownerTicket, "El tamanio de la lista deberia ser 1");
-    // });
-
   });
 
+  context("function: changeTicketPrice", async function () {
+    it("Should be owner Ticket equal to address input", async function () {
+      let msg_value = 99999;
+      let price_commission = 30;
+      await contract.createTicket(
+        "Coldplay",
+        "Concert Buenos Aires",
+        1,
+        10,
+        {from: ownerTicket}
+      );
+      await contract.changeTicketPrice(
+        ownerTicket,
+        0,
+        price_commission,
+        {value: msg_value}
+      );
+      contractTicket = await Ticket.new("Coldplay", "Concert Buenos Aires", 1, 10, ownerTicket);
+      let ticketOwner = await contractTicket.getOwner();
+      assert.equal(ticketOwner, ownerTicket, "Los address deberian ser iguales");
+    });
+
+    it("Should be owner Ticket different to address input", async function () {
+      let msg_value = 99999;
+      let price_commission = 30;
+      await contract.createTicket(
+        "Coldplay",
+        "Concert Buenos Aires",
+        1,
+        10,
+        {from: ownerTicket}
+      );
+      await contract.changeTicketPrice(
+        ownerTicket,
+        0,
+        price_commission,
+        {value: msg_value}
+      );
+      contractTicket = await Ticket.new("Coldplay", "Concert Buenos Aires", 1, 10, ownerTicket);
+      let ticketOwner = await contractTicket.getOwner();
+      assert.notEqual(ticketOwner, noOwnerTicket, "Los address deberian ser diferentes");
+    });
+
+    it("Should fail if the amount available is insufficient", async function () {
+      let msg_value = 20;
+      let price_commission = 30;
+      await contract.createTicket(
+        "Coldplay",
+        "Concert Buenos Aires",
+        1,
+        25,
+        {from: ownerTicket}
+      );
+      await utils.shouldThrow(
+        contract.changeTicketPrice(
+          ownerTicket,
+          0,
+          price_commission,
+          {value: msg_value}
+        )   
+      )
+    });
+  });
+  context("function: deleteTicket", async function () {
+    it("Should delete Ticket to owner address´s", async function () {
+      await contract.createTicket(
+        "Coldplay",
+        "Concert Buenos Aires",
+        1,
+        10,
+        {from: ownerTicket}
+      );
+      await contract.deleteTicket(
+        ownerTicket,
+        0,
+        {from: ownerTicket}
+      );
+      let listOwners = await contract.getOwners();
+      assert.equal(listOwners.length, 0, "El tamaño de la lista deberia ser 0");
+    });
+
+    it("Should should fail for not being owner", async function () {
+      await contract.createTicket(
+        "Coldplay",
+        "Concert Buenos Aires",
+        1,
+        10,
+        {from: ownerTicket}
+      );
+      await utils.shouldThrow(
+        contract.deleteTicket(
+          ownerTicket,
+          0,
+          {from: noOwnerTicket}
+        )
+      )
+    });
+  });
 });
