@@ -116,7 +116,7 @@ contract("Manager", function (accounts) {
       assert.equal(listOwners.length, 0, "El tamaño de la lista deberia ser 0");
     });
 
-    it("Should should fail for not being owner", async function () {
+    it("Should fail for not being owner", async function () {
       await contract.createTicket(
         "Coldplay",
         "Concert Buenos Aires",
@@ -126,6 +126,42 @@ contract("Manager", function (accounts) {
       );
       await utils.shouldThrow(
         contract.deleteTicket(
+          ownerTicket,
+          0,
+          {from: noOwnerTicket}
+        )
+      )
+    });
+  });
+
+  context("function: changeTransferStatusTicket", async function () {
+    it("Should change Ticket Status to owner address´s", async function () {
+      let transferStatus = 0; // TransferStatus.TRANSFERIBLE
+      await contract.createTicket(
+        "Coldplay",
+        "Concert Buenos Aires",
+        1,
+        10,
+        {from: ownerTicket}
+      );
+      let tx = await contract.changeTransferStatusTicket(
+        ownerTicket,
+        0,
+        {from: ownerTicket}
+      );
+      assert.equal(tx.logs[0].args.transferStatusTicket.toString(), transferStatus.toString(), "El Status deberia ser 0");
+    });
+
+    it("Should fail for not being owner", async function () {
+      await contract.createTicket(
+        "Coldplay",
+        "Concert Buenos Aires",
+        1,
+        10,
+        {from: ownerTicket}
+      );
+      await utils.shouldThrow(
+        contract.changeTransferStatusTicket(
           ownerTicket,
           0,
           {from: noOwnerTicket}

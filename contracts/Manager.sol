@@ -53,7 +53,7 @@ contract Manager is Ownable {
     event NewPrice(uint256);
     event ShowStatistics(uint256, uint256);
     event DeletedTicket(uint256);
-    event ChangedTransferStatusTicket(TransferStatus);
+    event ChangedTransferStatusTicket(TransferStatus transferStatusTicket);
     event ChangedStatusTicket(TicketStatus);
     event TransferredTicket(address, address);
     event ManagedFee(uint256);
