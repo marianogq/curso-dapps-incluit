@@ -135,7 +135,7 @@ contract("Manager", function (accounts) {
   });
 
   context("function: changeTransferStatusTicket", async function () {
-    it("Should change Ticket Status to owner address´s", async function () {
+    it("Should change Ticket Transfer Status to owner address´s", async function () {
       let transferStatus = 0; // TransferStatus.TRANSFERIBLE
       await contract.createTicket(
         "Coldplay",
@@ -149,7 +149,7 @@ contract("Manager", function (accounts) {
         0,
         {from: ownerTicket}
       );
-      assert.equal(tx.logs[0].args.transferStatusTicket.toString(), transferStatus.toString(), "El Status deberia ser 0");
+      assert.equal(tx.logs[0].args.transferStatusTicket.toString(), transferStatus.toString(), "El Transfer Status deberia ser 0");
     });
 
     it("Should fail for not being owner", async function () {
@@ -164,6 +164,44 @@ contract("Manager", function (accounts) {
         contract.changeTransferStatusTicket(
           ownerTicket,
           0,
+          {from: noOwnerTicket}
+        )
+      )
+    });
+  });
+
+  context("function: changeStatusTicket", async function () {
+    it("Should change Ticket Status to owner address´s", async function () {
+      let status = 1; // TransferStatus.TRANSFERIBLE
+      await contract.createTicket(
+        "Coldplay",
+        "Concert Buenos Aires",
+        1,
+        10,
+        {from: ownerTicket}
+      );
+      let tx = await contract.changeStatusTicket(
+        ownerTicket,
+        0,
+        1,
+        {from: ownerTicket}
+      );
+      assert.equal(tx.logs[0].args.statusTicket.toString(), status.toString(), "El Status deberia ser 1");
+    });
+
+    it("Should fail for not being owner", async function () {
+      await contract.createTicket(
+        "Coldplay",
+        "Concert Buenos Aires",
+        1,
+        10,
+        {from: ownerTicket}
+      );
+      await utils.shouldThrow(
+        contract.changeStatusTicket(
+          ownerTicket,
+          0,
+          1,
           {from: noOwnerTicket}
         )
       )
