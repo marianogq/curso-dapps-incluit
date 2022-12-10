@@ -26,6 +26,7 @@ contract Manager is Ownable {
 
     // Owners Tickets
     address[] public OwnersTickets;
+    address[] private noRepeatOwner;
 
     // Total de Tickets
     uint256 totalTickets = 0;
@@ -285,8 +286,25 @@ contract Manager is Ownable {
      */
     function showAllTickets() public {
         require(OwnersTickets.length > 0, "Lista de Tickets vacia");
+        address previuOwner;
+        bool repeat;
         for (uint256 j = 0; j < OwnersTickets.length; j++) {
-            showTicketsByAddress(OwnersTickets[j]);
+            if(j == 0) {
+                showTicketsByAddress(OwnersTickets[j]);
+                previuOwner = OwnersTickets[j];
+                noRepeatOwner.push(OwnersTickets[j]);
+            } else if(previuOwner != OwnersTickets[j]) {
+                repeat = false;
+                for(uint256 z=0; z < noRepeatOwner.length; z++){
+                    if(OwnersTickets[j] == noRepeatOwner[z]){
+                        repeat = true;
+                    }
+                }
+                if(!repeat){
+                    showTicketsByAddress(OwnersTickets[j]);
+                    previuOwner = OwnersTickets[j];
+                }   
+            }
         }
     }
 
