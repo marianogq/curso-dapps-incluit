@@ -55,8 +55,7 @@ contract Manager is Ownable {
     event DeletedTicket(uint256);
     event ChangedTransferStatusTicket(TransferStatus transferStatusTicket);
     event ChangedStatusTicket(TicketStatus statusTicket);
-    event TransferredTicket(address, address);
-    event ManagedFee(uint256);
+    event TransferredTicket(address oldOwner, address newOwner);
 
     event FundsReceived(uint256 amount);
 
@@ -230,7 +229,9 @@ contract Manager is Ownable {
         address _addressOwner,
         uint256 _index,
         address _newOwner
-    ) public payable onlyOwnerTicket(_addressOwner, _index) {
+    ) public payable {
+        address oldOwner;
+        address newOwner;
         // 1er Control
         require(
             _addressOwner == listTickets[_addressOwner][_index].getOwner(),
@@ -265,8 +266,10 @@ contract Manager is Ownable {
             value: msg.value - feeManage(feeTicket)
         }("");
         require(sent, "Error en el envio de Ether");
+        oldOwner = listTickets[_addressOwner][_index].getOwner();
         listTickets[_addressOwner][_index].changeOwner(_newOwner);
-        emit TransferredTicket(_addressOwner, _newOwner);
+        newOwner = listTickets[_addressOwner][_index].getOwner();
+        emit TransferredTicket(oldOwner, newOwner);
     }
 
     /**@dev Muestra información de los Tickets según dueño (owner).
@@ -293,7 +296,6 @@ contract Manager is Ownable {
     function feeManage(uint256 _feeTicket) public payable returns (uint256) {
         (bool success, ) = addressManager.call{value: _feeTicket}("");
         require(success == true, "Transferencia fallida!");
-        emit ManagedFee(_feeTicket);
         return _feeTicket;
     }
 

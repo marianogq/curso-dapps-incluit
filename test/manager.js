@@ -207,4 +207,59 @@ contract("Manager", function (accounts) {
       )
     });
   });
+
+  context("function: transferTicket", async function () {
+    it("Should change to Ticket owner address´s", async function () {
+      let _addressOwner = ownerTicket;
+      let _index = 0;
+      let _newOwner = noOwnerTicket;
+      let msg_value = 999;
+      await contract.createTicket(
+        "Coldplay",
+        "Concert Buenos Aires",
+        1,
+        1,
+        {from: _addressOwner}
+      );
+      await contract.changeTransferStatusTicket(
+        _addressOwner,
+        _index,
+        {from: _addressOwner}
+      );
+      let tx = await contract.transferTicket(
+        _addressOwner,
+        _index,
+        _newOwner,
+        {value: msg_value, from: _newOwner}
+      ); 
+      assert.notEqual(tx.logs[0].args.oldOwner.toString(), tx.logs[0].args.newOwner.toString(), "Las Address deben ser diferentes");
+    });
+
+    it("Should fail for not being New Owner", async function () {
+      let _addressOwner = ownerTicket;
+      let _index = 0;
+      let _newOwner = noOwnerTicket;
+      let msg_value = 999;
+      await contract.createTicket(
+        "Coldplay",
+        "Concert Buenos Aires",
+        1,
+        1,
+        {from: _addressOwner}
+      );
+      await contract.changeTransferStatusTicket(
+        _addressOwner,
+        _index,
+        {from: _addressOwner}
+      );
+      await utils.shouldThrow(
+        contract.transferTicket(
+          _addressOwner,
+          _index,
+          _newOwner,
+          {value: msg_value, from: _addressOwner}
+        )
+      )
+    });
+  });
 });
