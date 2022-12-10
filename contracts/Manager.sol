@@ -303,6 +303,7 @@ contract Manager is Ownable {
                 if(!repeat){
                     showTicketsByAddress(OwnersTickets[j]);
                     previuOwner = OwnersTickets[j];
+                    noRepeatOwner.push(OwnersTickets[j]);
                 }   
             }
         }
