@@ -232,7 +232,7 @@ contract("Manager", function (accounts) {
         _newOwner,
         {value: msg_value, from: _newOwner}
       ); 
-      assert.notEqual(tx.logs[0].args.oldOwner.toString(), tx.logs[0].args.newOwner.toString(), "Las Address deben ser diferentes");
+      assert.notEqual(tx.logs[1].args.oldOwner.toString(), tx.logs[1].args.newOwner.toString(), "Las Address deben ser diferentes");
     });
 
     it("Should fail for not being New Owner", async function () {

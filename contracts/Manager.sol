@@ -159,18 +159,35 @@ contract Manager is Ownable {
         onlyOwner
     {
         uint256 deletedTicket = listTickets[_addressOwner][_index].getId();
+        removingTicket(_addressOwner, _index);
+        emit DeletedTicket(deletedTicket);
+    }
+
+    /**@dev Funcion para Remover un Ticket según address del Owner (Función complementaria).
+    * @param _addressOwner Address Dueño del Ticket.
+    * @param _index Index del Ticket.
+    // Función accedida desde deleteTicket y desde transferTicket.
+    */
+    function removingTicket(address _addressOwner, uint256 _index) private {
         uint256 oldPrice = listTickets[_addressOwner][_index].getPrice();
         for (uint256 i = _index; i < listTickets[_addressOwner].length - 1; i++) {
             listTickets[_addressOwner][i] = listTickets[_addressOwner][i + 1];
         }
         listTickets[_addressOwner].pop();
+        // NO OLVIDAR UN TRY CATCH PARA .pop()
         totalTickets -= 1;
         balanceTickets = balanceTickets - oldPrice;
-        for (uint256 i = _index; i < OwnersTickets.length - 1; i++) {
-            OwnersTickets[i] = OwnersTickets[i + 1];
+        uint256 indexOwner;
+        for (uint256 j = 0; j < OwnersTickets.length-1; j++) {
+            if (OwnersTickets[j] == _addressOwner) {
+                indexOwner = j;
+            }
+        }
+        for (uint256 z = indexOwner; z < OwnersTickets.length - 1; z++) {
+            OwnersTickets[z] = OwnersTickets[z + 1];
         }
         OwnersTickets.pop();
-        emit DeletedTicket(deletedTicket);
+        // HASTA ACÁ DENTRO DEL TRY
     }
 
     /**@dev Función para cambiar el Estado de Transferencia (TRANSFERIBLE, NO_TRANSFERIBLE).
@@ -225,6 +242,7 @@ contract Manager is Ownable {
     // esto significa que se encuentra en Estado TRANSFERIBLE y VALID, éstos estados del Ticket
     // solo pueden ser modificados por el Dueño del Ticket (Owner).
     // El Nuevo Dueño es quien puede realizar el Pago de la Transferencia del Ticket.
+    // 
     */
     function transferTicket(
         address _addressOwner,
@@ -233,6 +251,9 @@ contract Manager is Ownable {
     ) public payable {
         address oldOwner;
         address newOwner;
+        uint256 idOldOwner;
+        uint256 idNewOwner;
+        uint256 eventDateOldOwner;
         // 1er Control
         require(
             _addressOwner == listTickets[_addressOwner][_index].getOwner(),
@@ -262,14 +283,28 @@ contract Manager is Ownable {
                 listTickets[_addressOwner][_index].getPrice() + feeTicket,
             "Por favor, ingrese un valor"
         );
-        // Pago del ticket y cambio de dueño
+        // Pago del Ticket
         (bool sent, ) = _addressOwner.call{
             value: msg.value - feeManage(feeTicket)
         }("");
         require(sent, "Error en el envio de Ether");
+        // Cambio de Dueño (address owner)
+        // Crea uno nuevo (address new owner) con los datos del anterior dueño.
         oldOwner = listTickets[_addressOwner][_index].getOwner();
-        listTickets[_addressOwner][_index].changeOwner(_newOwner);
-        newOwner = listTickets[_addressOwner][_index].getOwner();
+        idOldOwner = listTickets[_addressOwner][_index].getId();
+        eventDateOldOwner = listTickets[_addressOwner][_index].getEventDate();
+        createTicket(
+            listTickets[_addressOwner][_index].getEventName(),
+            listTickets[_addressOwner][_index].getEventDescription(),
+            listTickets[_addressOwner][_index].getEventType(),
+            listTickets[_addressOwner][_index].getPrice()
+        );
+        uint256 _indexNewOwner = listTickets[_newOwner].length - 1;
+        listTickets[_newOwner][_indexNewOwner].changeOwner(_newOwner, idOldOwner, eventDateOldOwner);
+        newOwner = listTickets[_newOwner][_indexNewOwner].getOwner();
+        idNewOwner = listTickets[_newOwner][_indexNewOwner].getId();
+        // Elimina antiguo Ticket (old owner)
+        removingTicket(_addressOwner, _index);
         emit TransferredTicket(oldOwner, newOwner);
     }
 

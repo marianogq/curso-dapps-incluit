@@ -76,10 +76,10 @@ contract Ticket {
         EventType eventTypeTicket,
         uint256 priceTicket,
         address ownerTicket
-    ) {
-        _id = generateId();
+    ) { 
+        _id = generateId(); 
+        _eventDate = block.timestamp; 
         _eventName = eventNameTicket;
-        _eventDate = block.timestamp;
         _eventDescription = eventDescriptionTicket;
         _eventType = eventTypeTicket;
         _price = priceTicket;
@@ -88,12 +88,17 @@ contract Ticket {
         _owner = ownerTicket;
     }
 
-    /**@dev Función para cambiar de dueño.
-     * @param _newOwner Nuevo dueño del Ticket.
+    /**@dev Función para cambiar de dueño del Ticket.
+    * @param _newOwner Nuevo dueño del Ticket.
+    * @param _oldId Id original del Ticket.
+    * @param _oldEventDate Event Date original del Ticket.
+    // Esta función se usa solo en caso de una Transferencia del Ticket a un nuevo dueño.
+    // Cambia por el Id original del Ticket y el Event Date original del Ticket del antiguo dueño.
      */
-    function changeOwner(address _newOwner) public {
+    function changeOwner(address _newOwner, uint256 _oldId, uint256 _oldEventDate) public {
         require(_newOwner != address(0));
-        _owner = _newOwner;
+        _id = _oldId;
+        _eventDate = _oldEventDate;
     }
 
     /**@dev Funcion para cambiar el precio del ticket.
