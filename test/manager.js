@@ -261,5 +261,32 @@ contract("Manager", function (accounts) {
         )
       )
     });
+
+    it("should fail for not having enough creditr", async function () {
+      let _addressOwner = ownerTicket;
+      let _index = 0;
+      let _newOwner = noOwnerTicket;
+      let msg_value = 9;
+      await contract.createTicket(
+        "Coldplay",
+        "Concert Buenos Aires",
+        1,
+        10,
+        {from: _addressOwner}
+      );
+      await contract.changeTransferStatusTicket(
+        _addressOwner,
+        _index,
+        {from: _addressOwner}
+      );
+      await utils.shouldThrow(
+        contract.transferTicket(
+          _addressOwner,
+          _index,
+          _newOwner,
+          {value: msg_value, from: _newOwner}
+        )
+      )
+    });
   });
 });
