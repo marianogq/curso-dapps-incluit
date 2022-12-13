@@ -44,13 +44,13 @@ contract("Manager", function (accounts) {
         "Concert Buenos Aires",
         1,
         10,
-        {from: ownerTicket}
+        { from: ownerTicket }
       );
       await contract.changeTicketPrice(
         ownerTicket,
         0,
         price_commission,
-        {value: msg_value}
+        { value: msg_value }
       );
       contractTicket = await Ticket.new("Coldplay", "Concert Buenos Aires", 1, 10, ownerTicket);
       let ticketOwner = await contractTicket.getOwner();
@@ -65,13 +65,13 @@ contract("Manager", function (accounts) {
         "Concert Buenos Aires",
         1,
         10,
-        {from: ownerTicket}
+        { from: ownerTicket }
       );
       await contract.changeTicketPrice(
         ownerTicket,
         0,
         price_commission,
-        {value: msg_value}
+        { value: msg_value }
       );
       contractTicket = await Ticket.new("Coldplay", "Concert Buenos Aires", 1, 10, ownerTicket);
       let ticketOwner = await contractTicket.getOwner();
@@ -86,15 +86,15 @@ contract("Manager", function (accounts) {
         "Concert Buenos Aires",
         1,
         25,
-        {from: ownerTicket}
+        { from: ownerTicket }
       );
       await utils.shouldThrow(
         contract.changeTicketPrice(
           ownerTicket,
           0,
           price_commission,
-          {value: msg_value}
-        )   
+          { value: msg_value }
+        )
       )
     });
   });
@@ -105,12 +105,12 @@ contract("Manager", function (accounts) {
         "Concert Buenos Aires",
         1,
         10,
-        {from: ownerTicket}
+        { from: ownerTicket }
       );
       await contract.deleteTicket(
         ownerTicket,
         0,
-        {from: ownerTicket}
+        { from: ownerTicket }
       );
       let listOwners = await contract.getOwners();
       assert.equal(listOwners.length, 0, "El tamaño de la lista deberia ser 0");
@@ -122,13 +122,13 @@ contract("Manager", function (accounts) {
         "Concert Buenos Aires",
         1,
         10,
-        {from: ownerTicket}
+        { from: ownerTicket }
       );
       await utils.shouldThrow(
         contract.deleteTicket(
           ownerTicket,
           0,
-          {from: noOwnerTicket}
+          { from: noOwnerTicket }
         )
       )
     });
@@ -142,12 +142,12 @@ contract("Manager", function (accounts) {
         "Concert Buenos Aires",
         1,
         10,
-        {from: ownerTicket}
+        { from: ownerTicket }
       );
       let tx = await contract.changeTransferStatusTicket(
         ownerTicket,
         0,
-        {from: ownerTicket}
+        { from: ownerTicket }
       );
       assert.equal(tx.logs[0].args.transferStatusTicket.toString(), transferStatus.toString(), "El Transfer Status deberia ser 0");
     });
@@ -158,13 +158,13 @@ contract("Manager", function (accounts) {
         "Concert Buenos Aires",
         1,
         10,
-        {from: ownerTicket}
+        { from: ownerTicket }
       );
       await utils.shouldThrow(
         contract.changeTransferStatusTicket(
           ownerTicket,
           0,
-          {from: noOwnerTicket}
+          { from: noOwnerTicket }
         )
       )
     });
@@ -178,13 +178,13 @@ contract("Manager", function (accounts) {
         "Concert Buenos Aires",
         1,
         10,
-        {from: ownerTicket}
+        { from: ownerTicket }
       );
       let tx = await contract.changeStatusTicket(
         ownerTicket,
         0,
         1,
-        {from: ownerTicket}
+        { from: ownerTicket }
       );
       assert.equal(tx.logs[0].args.statusTicket.toString(), status.toString(), "El Status deberia ser 1");
     });
@@ -195,14 +195,14 @@ contract("Manager", function (accounts) {
         "Concert Buenos Aires",
         1,
         10,
-        {from: ownerTicket}
+        { from: ownerTicket }
       );
       await utils.shouldThrow(
         contract.changeStatusTicket(
           ownerTicket,
           0,
           1,
-          {from: noOwnerTicket}
+          { from: noOwnerTicket }
         )
       )
     });
@@ -219,19 +219,19 @@ contract("Manager", function (accounts) {
         "Concert Buenos Aires",
         1,
         1,
-        {from: _addressOwner}
+        { from: _addressOwner }
       );
       await contract.changeTransferStatusTicket(
         _addressOwner,
         _index,
-        {from: _addressOwner}
+        { from: _addressOwner }
       );
       let tx = await contract.transferTicket(
         _addressOwner,
         _index,
         _newOwner,
-        {value: msg_value, from: _newOwner}
-      ); 
+        { value: msg_value, from: _newOwner }
+      );
       assert.notEqual(tx.logs[1].args.oldOwner.toString(), tx.logs[1].args.newOwner.toString(), "Las Address deben ser diferentes");
     });
 
@@ -245,19 +245,19 @@ contract("Manager", function (accounts) {
         "Concert Buenos Aires",
         1,
         1,
-        {from: _addressOwner}
+        { from: _addressOwner }
       );
       await contract.changeTransferStatusTicket(
         _addressOwner,
         _index,
-        {from: _addressOwner}
+        { from: _addressOwner }
       );
       await utils.shouldThrow(
         contract.transferTicket(
           _addressOwner,
           _index,
           _newOwner,
-          {value: msg_value, from: _addressOwner}
+          { value: msg_value, from: _addressOwner }
         )
       )
     });
@@ -272,19 +272,19 @@ contract("Manager", function (accounts) {
         "Concert Buenos Aires",
         1,
         10,
-        {from: _addressOwner}
+        { from: _addressOwner }
       );
       await contract.changeTransferStatusTicket(
         _addressOwner,
         _index,
-        {from: _addressOwner}
+        { from: _addressOwner }
       );
       await utils.shouldThrow(
         contract.transferTicket(
           _addressOwner,
           _index,
           _newOwner,
-          {value: msg_value, from: _newOwner}
+          { value: msg_value, from: _newOwner }
         )
       )
     });

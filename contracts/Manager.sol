@@ -100,7 +100,13 @@ contract Manager is Ownable {
         OwnersTickets.push(msg.sender);
         totalTickets += 1;
         balanceTickets = balanceTickets + _price;
-        emit CreatedTicket(_eventName, _eventDescription, _eventType, _price, msg.sender);
+        emit CreatedTicket(
+            _eventName,
+            _eventDescription,
+            _eventType,
+            _price,
+            msg.sender
+        );
     }
 
     /**@dev Funcion para cambiar el precio del ticket.
@@ -170,7 +176,11 @@ contract Manager is Ownable {
     */
     function removingTicket(address _addressOwner, uint256 _index) private {
         uint256 oldPrice = listTickets[_addressOwner][_index].getPrice();
-        for (uint256 i = _index; i < listTickets[_addressOwner].length - 1; i++) {
+        for (
+            uint256 i = _index;
+            i < listTickets[_addressOwner].length - 1;
+            i++
+        ) {
             listTickets[_addressOwner][i] = listTickets[_addressOwner][i + 1];
         }
         listTickets[_addressOwner].pop();
@@ -178,7 +188,7 @@ contract Manager is Ownable {
         totalTickets -= 1;
         balanceTickets = balanceTickets - oldPrice;
         uint256 indexOwner;
-        for (uint256 j = 0; j < OwnersTickets.length-1; j++) {
+        for (uint256 j = 0; j < OwnersTickets.length - 1; j++) {
             if (OwnersTickets[j] == _addressOwner) {
                 indexOwner = j;
             }
@@ -300,7 +310,11 @@ contract Manager is Ownable {
             listTickets[_addressOwner][_index].getPrice()
         );
         uint256 _indexNewOwner = listTickets[_newOwner].length - 1;
-        listTickets[_newOwner][_indexNewOwner].changeOwner(_newOwner, idOldOwner, eventDateOldOwner);
+        listTickets[_newOwner][_indexNewOwner].changeOwner(
+            _newOwner,
+            idOldOwner,
+            eventDateOldOwner
+        );
         newOwner = listTickets[_newOwner][_indexNewOwner].getOwner();
         idNewOwner = listTickets[_newOwner][_indexNewOwner].getId();
         // Elimina antiguo Ticket (old owner)
@@ -324,22 +338,22 @@ contract Manager is Ownable {
         address previuOwner;
         bool repeat;
         for (uint256 j = 0; j < OwnersTickets.length; j++) {
-            if(j == 0) {
+            if (j == 0) {
                 showTicketsByAddress(OwnersTickets[j]);
                 previuOwner = OwnersTickets[j];
                 noRepeatOwner.push(OwnersTickets[j]);
-            } else if(previuOwner != OwnersTickets[j]) {
+            } else if (previuOwner != OwnersTickets[j]) {
                 repeat = false;
-                for(uint256 z=0; z < noRepeatOwner.length; z++){
-                    if(OwnersTickets[j] == noRepeatOwner[z]){
+                for (uint256 z = 0; z < noRepeatOwner.length; z++) {
+                    if (OwnersTickets[j] == noRepeatOwner[z]) {
                         repeat = true;
                     }
                 }
-                if(!repeat){
+                if (!repeat) {
                     showTicketsByAddress(OwnersTickets[j]);
                     previuOwner = OwnersTickets[j];
                     noRepeatOwner.push(OwnersTickets[j]);
-                }   
+                }
             }
         }
     }
@@ -366,8 +380,8 @@ contract Manager is Ownable {
     }
 
     /**@dev Función que devuelve la lista de Owners.
-    * @return OwnersTickets Lista de Address de Dueños de Tickets.
-    */
+     * @return OwnersTickets Lista de Address de Dueños de Tickets.
+     */
     function getOwners() public view returns (address[] memory) {
         return OwnersTickets;
     }
